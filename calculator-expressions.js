@@ -202,7 +202,7 @@ function parseExpressionRecursive(expressionString, startIndex, endIndex){
     
     //First pass: split on add/subtract operations.
     //These will be evaluated last.
-    for(let i=startIndex; i<endIndex; i++){
+    for(let i=endIndex-1; i>=startIndex; i--){
         let curChar = expressionString.charAt(i);
         if(curChar == '+' || curChar == '-'){
             let term1 = parseExpressionRecursive(expressionString, startIndex, i);
@@ -221,7 +221,7 @@ function parseExpressionRecursive(expressionString, startIndex, endIndex){
     }
 
     //No more addition terms, do second pass for multiplication/division
-    for(let i=startIndex; i<endIndex; i++){
+    for(let i=endIndex-1; i>=startIndex; i--){
         let curChar = expressionString.charAt(i);
         if(curChar == '*' || curChar == '/'){
             let term1 = parseExpressionRecursive(expressionString, startIndex, i);
