@@ -12,17 +12,20 @@
 <body>
     <div id="calculator-main" class="calculator-container">
         <header class="calculator-header calculator-section">
-            <p class="calculator-title">Radical Calculator</p>
+            <div class="calculator-title">
+                <p class="calculator-title-main">TI-<strong>MAX</strong></p>
+                <p class="calculator-title-subtitle">Calculator</p>
+            </div>
+
+            <section class="calculator-output calculator-section">
+                <input type="text" disabled class="calculator-input-display"></input>
+                <input type="text" disabled class="calculator-output-display"></input>
+            </section>
         </header>
 
-        <section class="calculator-output calculator-section">
-            <input type="text" class="calculator-input-display"></input>
-            <input type="text" class="calculator-output-display"></input>
-        </section>
-
         <section class="calculator-buttons calculator-section">
-            <button class="button-operator" data-operator="(">(</button>
-            <button class="button-operator" data-operator=")">)</button>
+            <button class="button-operator button-paren" data-operator="(">(</button>
+            <button class="button-operator button-paren" data-operator=")">)</button>
             <button class="button-backspace">&#60;=</button>
             <button class="button-clear">Nuke</button>
 
