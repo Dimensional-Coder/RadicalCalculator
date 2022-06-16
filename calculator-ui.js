@@ -4,29 +4,75 @@
  */
 
 /**
+ * Given a click event on a calculator, find the closest
+ * parent calculator container.
+ * 
+ * Implemented this way to allow for embedding calculators
+ * at a later date.
+ * 
+ * @param {*} clickEvent The click event raised from a button click
+ * @return The calculator container element
+ */
+function getCalculatorContainer(clickEvent){
+    return clickEvent.target.closest('.calculator-container');
+}
+
+/**
  * Append string to the calculator input field
  */
-function addToCalculatorInput(str){
-    calcContainer = document.getElementById('calculator-main');
-    calcInput = calcContainer.getElementsByClassName('calculator-input-display')[0];
+function addToCalculatorInput(clickEvent, str){
+    let calcContainer = getCalculatorContainer(clickEvent);
+    let calcInput = calcContainer.getElementsByClassName('calculator-input-display')[0];
 
     calcInput.value = calcInput.value + str;
 }
 
+function getCalculatorInput(clickEvent){
+    let calcContainer = getCalculatorContainer(clickEvent);
+    let calcInput = calcContainer.getElementsByClassName('calculator-input-display')[0];
+
+    return calcInput.value;
+}
+
+/**
+ * Append string to the calculator input field
+ */
+ function setCalculatorOutput(clickEvent, str){
+    let calcContainer = getCalculatorContainer(clickEvent);
+    let calcOutput = calcContainer.getElementsByClassName('calculator-output-display')[0];
+
+    calcOutput.value = str;
+}
+
 function onNumberClick(e){
     //Custom data-number attribute
-    number = e.target.dataset.number;
-    addToCalculatorInput(number);
+    let number = e.target.dataset.number;
+    addToCalculatorInput(e, number);
 }
 
 function onOperatorClick(e){
     //Custom data-number attribute
-    operator = e.target.dataset.operator;
-    addToCalculatorInput(operator);
+    let operator = e.target.dataset.operator;
+    addToCalculatorInput(e, operator);
 }
 
 function onSubmitClick(e){
-    //TODO
+    let expressionString = getCalculatorInput(e);
+    console.log(`Expression submitted: ${expressionString}`);
+
+    let expressionResult = 'Invalid Expression';
+
+    try{
+        let expression = parseExpression(expressionString);
+        console.log(`Expression parsed: ${expression.toString()}`);
+
+        expressionResult = expression.evaluate();
+        console.log(`Expression value: ${expressionResult}`);
+    }catch(exc){
+        console.error(`Failed to parse or evaluate expression: "${exc.message}"`);
+    }
+
+    setCalculatorOutput(e, expressionResult);
 }
 
 function initButtons(){
