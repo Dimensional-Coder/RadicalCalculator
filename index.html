@@ -7,18 +7,20 @@
     <title>Calculator Demo</title>
     <script defer src="calculator-expressions.js"></script>
     <script defer src="calculator-ui.js"></script>
+    <link rel="stylesheet" href="calculator.css">
 </head>
 <body>
     <div id="calculator-main" class="calculator-container">
-        <header class="calculator-header">
-            <p>Calculator</p>
+        <header class="calculator-header calculator-section">
+            <p class="calculator-title">Calculator</p>
         </header>
 
-        <section class="calculator-output">
-            <p class="calculator-input-field"></p>
+        <section class="calculator-output calculator-section">
+            <input type="text" class="calculator-input-display"></input>
+            <input type="text" class="calculator-output-display"></input>
         </section>
 
-        <section class="calculator-buttons">
+        <section class="calculator-buttons calculator-section">
             <button class="button-number" data-number="7">7</button>
             <button class="button-number" data-number="8">8</button>
             <button class="button-number" data-number="9">9</button>

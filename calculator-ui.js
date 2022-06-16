@@ -8,9 +8,9 @@
  */
 function addToCalculatorInput(str){
     calcContainer = document.getElementById('calculator-main');
-    calcInput = calcContainer.getElementsByClassName('calculator-input-field')[0];
+    calcInput = calcContainer.getElementsByClassName('calculator-input-display')[0];
 
-    calcInput.innerHTML = calcInput.innerHTML + str;
+    calcInput.value = calcInput.value + str;
 }
 
 function onNumberClick(e){
