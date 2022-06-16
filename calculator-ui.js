@@ -45,8 +45,10 @@ function backspaceCalculatorInput(clickEvent){
 function clearCalculatorInput(clickEvent){
     let calcContainer = getCalculatorContainer(clickEvent);
     let calcInput = calcContainer.getElementsByClassName('calculator-input-display')[0];
+    let calcOutput = calcContainer.getElementsByClassName('calculator-output-display')[0];
 
     calcInput.value = '';
+    calcOutput.value = '';
 }
 
 /**

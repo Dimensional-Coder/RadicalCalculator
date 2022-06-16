@@ -107,6 +107,46 @@ function findCloseParenthesis(expressionString, openParenIndex, endIndex){
     throw new ExpressionParsingError(`Failed to find close parenthesis with [${openParenIndex}, ${endIndex}]`)
 }
 
+function hasTermBeforeParentheses(expressionString, startIndex, openParenIndex){
+    for(let i=openParenIndex-1; i>=startIndex; i--){
+        let curChar = expressionString.charAt(i);
+
+        //Ignore whitespace
+        if(curChar == ' ')
+            continue;
+        
+        if(curChar == ')'){
+            return true;
+        }
+
+        //Nothing else we recognize, it can only be
+        //a term if it's a number
+        return !isNaN(curChar)
+    }
+
+    return false;
+}
+
+function hasTermAfterParentheses(expressionString, closeParenIndex, endIndex){
+    for(let i=closeParenIndex+1; i<endIndex; i++){
+        let curChar = expressionString.charAt(i);
+
+        //Ignore whitespace
+        if(curChar == ' ')
+            continue;
+        
+        if(curChar == '('){
+            return true;
+        }
+
+        //Nothing else we recognize, it can only be
+        //a term if it's a number
+        return !isNaN(curChar)
+    }
+
+    return false;
+}
+
 function trimTrailingWhitespace(expressionString, startIndex, endIndex){
     while(endIndex > startIndex && expressionString.charAt(endIndex - 1) == ' ')
         endIndex--;
@@ -145,8 +185,8 @@ function parseExpressionRecursive(expressionString, startIndex, endIndex){
     endIndex = trimTrailingWhitespace(expressionString, startIndex, endIndex);
     startIndex = trimLeadingWhitespace(expressionString, startIndex, endIndex);
 
-    if(expressionString.charAt(startIndex) == '(' && expressionString.charAt(endIndex-1) == ')'){
-        //No need for parentheses if the whole expression is inside them
+    //Trim redundant parentheses if the whole expression is inside parens
+    while(expressionString.charAt(startIndex) == '(' && findCloseParenthesis(expressionString, startIndex, endIndex) == endIndex-1){
         startIndex++;
         endIndex--;
 
@@ -195,7 +235,19 @@ function parseExpressionRecursive(expressionString, startIndex, endIndex){
 
         //Skip over parentheses, they will be processed as a separate expression
         if(curChar == '('){
-            i = findCloseParenthesis(expressionString, i, endIndex);
+            closeParenIndex = findCloseParenthesis(expressionString, i, endIndex);
+
+            //If there's another term right next to the parentheses,
+            //treat it as a multiplication expression
+            if(hasTermBeforeParentheses(expressionString, startIndex, i)){
+                let term1 = parseExpressionRecursive(expressionString, startIndex, i);
+                let term2 = parseExpressionRecursive(expressionString, i, endIndex);
+                return new MultiplyExpression(term1, term2);
+            }else if(hasTermAfterParentheses(expressionString, closeParenIndex, endIndex)){
+                let term1 = parseExpressionRecursive(expressionString, startIndex, closeParenIndex+1);
+                let term2 = parseExpressionRecursive(expressionString, closeParenIndex+1, endIndex);
+                return new MultiplyExpression(term1, term2);
+            }
         }
     }
 
