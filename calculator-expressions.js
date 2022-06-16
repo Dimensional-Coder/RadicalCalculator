@@ -104,7 +104,7 @@ function findCloseParenthesis(expressionString, openParenIndex, endIndex){
     }
 
     //Not found
-    return -1;
+    throw new ExpressionParsingError(`Failed to find close parenthesis with [${openParenIndex}, ${endIndex}]`)
 }
 
 function trimTrailingWhitespace(expressionString, startIndex, endIndex){

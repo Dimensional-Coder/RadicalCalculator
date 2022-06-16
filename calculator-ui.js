@@ -20,7 +20,7 @@ function getCalculatorContainer(clickEvent){
 /**
  * Append string to the calculator input field
  */
-function addToCalculatorInput(clickEvent, str){
+function appendToCalculatorInput(clickEvent, str){
     let calcContainer = getCalculatorContainer(clickEvent);
     let calcInput = calcContainer.getElementsByClassName('calculator-input-display')[0];
 
@@ -32,6 +32,21 @@ function getCalculatorInput(clickEvent){
     let calcInput = calcContainer.getElementsByClassName('calculator-input-display')[0];
 
     return calcInput.value;
+}
+
+function backspaceCalculatorInput(clickEvent){
+    let calcContainer = getCalculatorContainer(clickEvent);
+    let calcInput = calcContainer.getElementsByClassName('calculator-input-display')[0];
+
+    if(calcInput.value.length > 0)
+        calcInput.value = calcInput.value.substring(0, calcInput.value.length-1);
+}
+
+function clearCalculatorInput(clickEvent){
+    let calcContainer = getCalculatorContainer(clickEvent);
+    let calcInput = calcContainer.getElementsByClassName('calculator-input-display')[0];
+
+    calcInput.value = '';
 }
 
 /**
@@ -47,13 +62,21 @@ function getCalculatorInput(clickEvent){
 function onNumberClick(e){
     //Custom data-number attribute
     let number = e.target.dataset.number;
-    addToCalculatorInput(e, number);
+    appendToCalculatorInput(e, number);
 }
 
 function onOperatorClick(e){
     //Custom data-number attribute
     let operator = e.target.dataset.operator;
-    addToCalculatorInput(e, operator);
+    appendToCalculatorInput(e, operator);
+}
+
+function onBackspaceClick(e){
+    backspaceCalculatorInput(e);
+}
+
+function onClearClick(e){
+    clearCalculatorInput(e);
 }
 
 function onSubmitClick(e){
@@ -75,8 +98,7 @@ function onSubmitClick(e){
     setCalculatorOutput(e, expressionResult);
 }
 
-function initButtons(){
-    calcContainer = document.getElementById('calculator-main');
+function initButtons(calcContainer){
     for(let numericButton of calcContainer.getElementsByClassName('button-number')){
         numericButton.addEventListener('click', onNumberClick);
     }
@@ -88,13 +110,20 @@ function initButtons(){
     let submitButton = calcContainer.getElementsByClassName('button-submit')[0];
     submitButton.addEventListener('click', onSubmitClick);
 
+    let backspaceButton = calcContainer.getElementsByClassName('button-backspace')[0];
+    backspaceButton.addEventListener('click', onBackspaceClick);
+
+    let clearButton = calcContainer.getElementsByClassName('button-clear')[0];
+    clearButton.addEventListener('click', onClearClick);
+
     console.log("Calculator buttons initialized");
 }
 
 function init(){
-    initButtons();
-
-    console.log("Calculator initialized");
+    for(let calcContainer of document.getElementsByClassName('calculator-container')){
+        initButtons(calcContainer);
+        console.log("Calculator initialized");
+    }
 }
 
 //With script defer, should be no need to wait until the page is ready
