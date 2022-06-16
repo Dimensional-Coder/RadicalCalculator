@@ -65,12 +65,14 @@ function onNumberClick(e){
     //Custom data-number attribute
     let number = e.target.dataset.number;
     appendToCalculatorInput(e, number);
+    setCalculatorOutput(e, '');
 }
 
 function onOperatorClick(e){
     //Custom data-number attribute
     let operator = e.target.dataset.operator;
     appendToCalculatorInput(e, operator);
+    setCalculatorOutput(e, '');
 }
 
 function onBackspaceClick(e){

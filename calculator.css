@@ -104,6 +104,10 @@
     flex-basis: 20%;
 }
 
+.calculator-buttons > button:active {
+    transform: scale(90%);
+}
+
 .button-number, .button-decimal{
     background-color: #191B1D;
     color: white;
