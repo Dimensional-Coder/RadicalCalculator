@@ -85,7 +85,7 @@ function onSubmitClick(e){
     let expressionString = getCalculatorInput(e);
     console.log(`Expression submitted: ${expressionString}`);
 
-    let expressionResult = 'Invalid Expression';
+    let expressionResult = 'Invalid';
 
     try{
         let expression = parseExpression(expressionString);
