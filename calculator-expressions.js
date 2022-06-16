@@ -1,3 +1,7 @@
+/**
+ * This script contains logic and classes for parsing
+ * and evaluating expressions for the calculator.
+ */
 
 /**
  * An expression, to represent a mathematical operation on two terms.
