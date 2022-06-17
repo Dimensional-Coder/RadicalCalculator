@@ -17,9 +17,6 @@ function getCalculatorContainer(clickEvent){
     return clickEvent.target.closest('.calculator-container');
 }
 
-/**
- * Append string to the calculator input field
- */
 function appendToCalculatorInput(clickEvent, str){
     let calcContainer = getCalculatorContainer(clickEvent);
     let calcInput = calcContainer.getElementsByClassName('calculator-input-display')[0];
@@ -51,10 +48,7 @@ function clearCalculatorInput(clickEvent){
     calcOutput.value = '';
 }
 
-/**
- * Append string to the calculator input field
- */
- function setCalculatorOutput(clickEvent, str){
+function setCalculatorOutput(clickEvent, str){
     let calcContainer = getCalculatorContainer(clickEvent);
     let calcOutput = calcContainer.getElementsByClassName('calculator-output-display')[0];
 

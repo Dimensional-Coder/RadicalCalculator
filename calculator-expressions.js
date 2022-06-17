@@ -136,6 +136,12 @@ function findCloseParenthesis(expressionString, openParenIndex, endIndex){
     throw new ExpressionParsingError(`Failed to find open parenthesis with [${startIndex}, ${closeParenIndex}]`)
 }
 
+/**
+ * Check if there is a term adjacent and before a set of parentheses.
+ * Useful for checking if a term should be multiplied.
+ * 
+ * @returns True if there is a term adjacent and before the parentheses
+ */
 function hasTermBeforeParentheses(expressionString, startIndex, openParenIndex){
     for(let i=openParenIndex-1; i>=startIndex; i--){
         let curChar = expressionString.charAt(i);
@@ -156,6 +162,12 @@ function hasTermBeforeParentheses(expressionString, startIndex, openParenIndex){
     return false;
 }
 
+/**
+ * Check if there is a term adjacent and after a set of parentheses.
+ * Useful for checking if a term should be multiplied.
+ * 
+ * @returns True if there is a term adjacent and after the parentheses
+ */
 function hasTermAfterParentheses(expressionString, closeParenIndex, endIndex){
     for(let i=closeParenIndex+1; i<endIndex; i++){
         let curChar = expressionString.charAt(i);
@@ -176,18 +188,31 @@ function hasTermAfterParentheses(expressionString, closeParenIndex, endIndex){
     return false;
 }
 
+/**
+ * Skip characters to ignore white space in a term.
+ * 
+ * @returns The first non-whitespace index at the end of the string
+ */
 function trimTrailingWhitespace(expressionString, startIndex, endIndex){
     while(endIndex > startIndex && expressionString.charAt(endIndex - 1) == ' ')
         endIndex--;
     return endIndex;
 }
 
+/**
+ * Skip characters to ignore white space in a term.
+ * 
+ * @returns The first non-whitespace index at the beginning of the string
+ */
 function trimLeadingWhitespace(expressionString, startIndex, endIndex){
     while(startIndex < endIndex && expressionString.charAt(startIndex) == ' ')
         startIndex++;
     return startIndex;
 }
 
+/**
+ * Parse a numeric term into a value.
+ */
 function parseNumericValue(expressionString, startIndex, endIndex){
     endIndex = trimTrailingWhitespace(expressionString, startIndex, endIndex);
     startIndex = trimLeadingWhitespace(expressionString, startIndex, endIndex);
@@ -206,9 +231,12 @@ function parseNumericValue(expressionString, startIndex, endIndex){
 }
 
 /**
- * Parse a string into expressions that can be evaluated
- * @param {*} expressionString 
- * @return An array of expressions that can be evaluated for a value.
+ * Recursive helper for parseExpression
+ * 
+ * @param {*} expressionString The expression input
+ * @param {*} startIndex The start index for the current substring being processed
+ * @param {*} endIndex The end index for the current substring being processed
+ * @returns 
  */
 function parseExpressionRecursive(expressionString, startIndex, endIndex){
     endIndex = trimTrailingWhitespace(expressionString, startIndex, endIndex);
@@ -285,6 +313,11 @@ function parseExpressionRecursive(expressionString, startIndex, endIndex){
     return new NumberExpression(numericTerm);
 }
 
+/**
+ * Parse a string into expressions that can be evaluated
+ * @param {*} expressionString 
+ * @return An array of expressions that can be evaluated for a value.
+ */
 function parseExpression(expressionString){
     return parseExpressionRecursive(expressionString, 0, expressionString.length);
 }
