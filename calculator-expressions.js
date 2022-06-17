@@ -73,13 +73,23 @@ class DivideExpression extends Expression{
     }
 }
 
+class PowerExpression extends Expression{
+    evaluate(){
+        return this.term1.evaluate() ** this.term2.evaluate();
+    }
+
+    toString(){
+        return `(${this.term1.toString()}) ^ (${this.term2.toString()})`
+    }
+}
+
 //To throw when the user makes an oopsie
 class ExpressionParsingError extends Error{
 
 }
 
 function isOperator(character){
-    return "/*-+".indexOf(character) != -1;
+    return "/*-+^".indexOf(character) != -1;
 }
 
 /**
@@ -272,6 +282,9 @@ function splitParenthesisExpression(expressionString, parenIndex, isCloseParen, 
             case '-':
                 operatorClass = SubtractExpression;
                 break;
+            case '^':
+                operatorClass = PowerExpression;
+                break;
         }
     }else{
         operatorClass = MultiplyExpression;
@@ -365,6 +378,15 @@ function parseExpressionRecursive(expressionString, startIndex, endIndex){
                 return splitParenthesisExpression(expressionString, openParenIndex, false, startIndex, endIndex);
             }
         }
+    }
+
+    for(let i=endIndex-1; i>=startIndex; i--){
+        let curChar = expressionString.charAt(i);
+        if(curChar == '^')
+            return splitExpressionIntoTerms(expressionString, startIndex, i, i+1, endIndex, PowerExpression);
+        
+        if(curChar == ')')
+            i = findOpenParenthesis(expressionString, startIndex, i);
     }
 
     //No operators found, this must be a numeric term or invalid
