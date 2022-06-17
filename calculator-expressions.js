@@ -232,6 +232,73 @@ function parseNumericValue(expressionString, startIndex, endIndex){
     return parseInt(numericString);
 }
 
+function splitExpressionIntoTerms(expressionString, term1start, term1end, term2start, term2end, expressionClass){
+    let term1 = parseExpressionRecursive(expressionString, term1start, term1end);
+    let term2 = parseExpressionRecursive(expressionString, term2start, term2end);
+    
+    return new expressionClass(term1, term2);
+}
+
+function splitParenthesisExpression(expressionString, parenIndex, isCloseParen, startIndex, endIndex){
+    let hasAdjacentOperator = false;
+    let operator = null;
+    let operatorClass = null;
+    let term1 = null;
+    let term2 = null;
+
+    if(isCloseParen){
+        if(isOperator(expressionString.charAt(parenIndex+1))){
+            hasAdjacentOperator = true;
+            operator = expressionString.charAt(parenIndex+1);
+        }
+    }else{
+        if(isOperator(expressionString.charAt(parenIndex-1))){
+            hasAdjacentOperator = true;
+            operator = expressionString.charAt(parenIndex-1);
+        }
+    }
+
+    if(hasAdjacentOperator){
+        switch(operator){
+            case '/':
+                operatorClass = DivideExpression;
+                break;
+            case '*':
+                operatorClass = MultiplyExpression;
+                break;
+            case '+':
+                operatorClass = AddExpression;
+                break;
+            case '-':
+                operatorClass = SubtractExpression;
+                break;
+        }
+    }else{
+        operatorClass = MultiplyExpression;
+    }
+
+    //Now, split the terms
+    if(isCloseParen){
+        term1 = parseExpressionRecursive(expressionString, startIndex, parenIndex+1);
+
+        if(hasAdjacentOperator){    
+            term2 = parseExpressionRecursive(expressionString, parenIndex+2, endIndex);
+        }else{
+            term2 = parseExpressionRecursive(expressionString, parenIndex+1, endIndex);
+        }
+    }else{
+        term2 = parseExpressionRecursive(expressionString, parenIndex, endIndex);
+
+        if(hasAdjacentOperator){    
+            term1 = parseExpressionRecursive(expressionString, startIndex, parenIndex-1);
+        }else{
+            term1 = parseExpressionRecursive(expressionString, startIndex, parenIndex);
+        }
+    }
+
+    return new operatorClass(term1, term2);
+}
+
 /**
  * Recursive helper for parseExpression
  * 
@@ -264,13 +331,10 @@ function parseExpressionRecursive(expressionString, startIndex, endIndex){
     for(let i=endIndex-1; i>=startIndex; i--){
         let curChar = expressionString.charAt(i);
         if(curChar == '+' || curChar == '-'){
-            let term1 = parseExpressionRecursive(expressionString, startIndex, i);
-            let term2 = parseExpressionRecursive(expressionString, i+1, endIndex);
-            
             if(curChar == '+')
-                return new AddExpression(term1, term2);
+                return splitExpressionIntoTerms(expressionString, startIndex, i, i+1, endIndex, AddExpression);
             else
-                return new SubtractExpression(term1, term2);
+                return splitExpressionIntoTerms(expressionString, startIndex, i, i+1, endIndex, SubtractExpression);
         }
 
         //Skip over parentheses, they will be processed as a separate expression
@@ -283,13 +347,10 @@ function parseExpressionRecursive(expressionString, startIndex, endIndex){
     for(let i=endIndex-1; i>=startIndex; i--){
         let curChar = expressionString.charAt(i);
         if(curChar == '*' || curChar == '/'){
-            let term1 = parseExpressionRecursive(expressionString, startIndex, i);
-            let term2 = parseExpressionRecursive(expressionString, i+1, endIndex);
-            
             if(curChar == '*')
-                return new MultiplyExpression(term1, term2);
+                return splitExpressionIntoTerms(expressionString, startIndex, i, i+1, endIndex, MultiplyExpression);
             else
-                return new DivideExpression(term1, term2);
+                return splitExpressionIntoTerms(expressionString, startIndex, i, i+1, endIndex, DivideExpression);
         }
 
         //Skip over parentheses, they will be processed as a separate expression
@@ -299,45 +360,9 @@ function parseExpressionRecursive(expressionString, startIndex, endIndex){
             //If there's another term right next to the parentheses,
             //treat it as a multiplication expression
             if(hasTermAfterParentheses(expressionString, i, endIndex)){
-                if(isOperator(expressionString.charAt(i+1))){
-                    let term1 = parseExpressionRecursive(expressionString, startIndex, openParenIndex-1);
-                    let term2 = parseExpressionRecursive(expressionString, openParenIndex, endIndex);
-
-                    switch(expressionString.charAt(openParenIndex-1)){
-                        case '/':
-                            return new DivideExpression(term1, term2);
-                        case '*':
-                            return new MultiplyExpression(term1, term2);
-                        case '+':
-                            return new AddExpression(term1, term2);
-                        case '-':
-                            return new SubtractExpression(term1, term2);
-                    }
-                }else{
-                    let term1 = parseExpressionRecursive(expressionString, startIndex, i+1);
-                    let term2 = parseExpressionRecursive(expressionString, i+1, endIndex);
-                    return new MultiplyExpression(term1, term2);
-                }
+                return splitParenthesisExpression(expressionString, i, true, startIndex, endIndex);
             }else if(hasTermBeforeParentheses(expressionString, startIndex, openParenIndex)){
-                if(isOperator(expressionString.charAt(openParenIndex-1))){
-                    let term1 = parseExpressionRecursive(expressionString, startIndex, openParenIndex-1);
-                    let term2 = parseExpressionRecursive(expressionString, openParenIndex, endIndex);
-
-                    switch(expressionString.charAt(openParenIndex-1)){
-                        case '/':
-                            return new DivideExpression(term1, term2);
-                        case '*':
-                            return new MultiplyExpression(term1, term2);
-                        case '+':
-                            return new AddExpression(term1, term2);
-                        case '-':
-                            return new SubtractExpression(term1, term2);
-                    }
-                }else{
-                    let term1 = parseExpressionRecursive(expressionString, startIndex, openParenIndex);
-                    let term2 = parseExpressionRecursive(expressionString, openParenIndex, endIndex);
-                    return new MultiplyExpression(term1, term2);
-                }
+                return splitParenthesisExpression(expressionString, openParenIndex, false, startIndex, endIndex);
             }
         }
     }
