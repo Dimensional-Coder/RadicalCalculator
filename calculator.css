@@ -102,6 +102,10 @@
     margin: 5px;
     flex-grow: 1;
     flex-basis: 20%;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
 }
 
 .calculator-buttons > button:active {

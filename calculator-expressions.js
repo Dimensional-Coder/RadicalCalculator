@@ -78,6 +78,10 @@ class ExpressionParsingError extends Error{
 
 }
 
+function isOperator(character){
+    return "/*-+".indexOf(character) != -1;
+}
+
 /**
  * Given an open parenthesis, find the index of the matching close paren
  * @param {*} expressionString The full expression string
@@ -150,9 +154,8 @@ function hasTermBeforeParentheses(expressionString, startIndex, openParenIndex){
         if(curChar == ' ')
             continue;
         
-        if(curChar == ')'){
+        if(curChar == ')' || isOperator(curChar))
             return true;
-        }
 
         //Nothing else we recognize, it can only be
         //a term if it's a number
@@ -176,9 +179,8 @@ function hasTermAfterParentheses(expressionString, closeParenIndex, endIndex){
         if(curChar == ' ')
             continue;
         
-        if(curChar == '('){
+        if(curChar == '(' || isOperator(curChar))
             return true;
-        }
 
         //Nothing else we recognize, it can only be
         //a term if it's a number
@@ -297,13 +299,45 @@ function parseExpressionRecursive(expressionString, startIndex, endIndex){
             //If there's another term right next to the parentheses,
             //treat it as a multiplication expression
             if(hasTermAfterParentheses(expressionString, i, endIndex)){
-                let term1 = parseExpressionRecursive(expressionString, startIndex, i+1);
-                let term2 = parseExpressionRecursive(expressionString, i+1, endIndex);
-                return new MultiplyExpression(term1, term2);
+                if(isOperator(expressionString.charAt(openParenIndex-1))){
+                    let term1 = parseExpressionRecursive(expressionString, startIndex, openParenIndex-1);
+                    let term2 = parseExpressionRecursive(expressionString, openParenIndex, endIndex);
+
+                    switch(expressionString.charAt(openParenIndex-1)){
+                        case '/':
+                            return new DivideExpression(term1, term2);
+                        case '*':
+                            return new MultiplyExpression(term1, term2);
+                        case '+':
+                            return new AddExpression(term1, term2);
+                        case '-':
+                            return new SubtractExpression(term1, term2);
+                    }
+                }else{
+                    let term1 = parseExpressionRecursive(expressionString, startIndex, i+1);
+                    let term2 = parseExpressionRecursive(expressionString, i+1, endIndex);
+                    return new MultiplyExpression(term1, term2);
+                }
             }else if(hasTermBeforeParentheses(expressionString, startIndex, openParenIndex)){
-                let term1 = parseExpressionRecursive(expressionString, startIndex, openParenIndex);
-                let term2 = parseExpressionRecursive(expressionString, openParenIndex, endIndex);
-                return new MultiplyExpression(term1, term2);
+                if(isOperator(expressionString.charAt(openParenIndex-1))){
+                    let term1 = parseExpressionRecursive(expressionString, startIndex, openParenIndex-1);
+                    let term2 = parseExpressionRecursive(expressionString, openParenIndex, endIndex);
+
+                    switch(expressionString.charAt(openParenIndex-1)){
+                        case '/':
+                            return new DivideExpression(term1, term2);
+                        case '*':
+                            return new MultiplyExpression(term1, term2);
+                        case '+':
+                            return new AddExpression(term1, term2);
+                        case '-':
+                            return new SubtractExpression(term1, term2);
+                    }
+                }else{
+                    let term1 = parseExpressionRecursive(expressionString, startIndex, openParenIndex);
+                    let term2 = parseExpressionRecursive(expressionString, openParenIndex, endIndex);
+                    return new MultiplyExpression(term1, term2);
+                }
             }
         }
     }
