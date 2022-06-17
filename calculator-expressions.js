@@ -299,7 +299,7 @@ function parseExpressionRecursive(expressionString, startIndex, endIndex){
             //If there's another term right next to the parentheses,
             //treat it as a multiplication expression
             if(hasTermAfterParentheses(expressionString, i, endIndex)){
-                if(isOperator(expressionString.charAt(openParenIndex-1))){
+                if(isOperator(expressionString.charAt(i+1))){
                     let term1 = parseExpressionRecursive(expressionString, startIndex, openParenIndex-1);
                     let term2 = parseExpressionRecursive(expressionString, openParenIndex, endIndex);
 
